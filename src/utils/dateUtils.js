@@ -1,56 +1,30 @@
 /**
- * Utility to convert any Date or timestamp string into Indian Standard Time (IST, UTC+05:30)
- * Returns ISO-like IST string: "YYYY-MM-DDTHH:mm:ss.sss"
+ * Returns today's date in local 'YYYY-MM-DD' format.
  */
-export function getISTTimestamp(inputDate) {
-  if (!inputDate) {
-    const d = new Date();
-    const formatter = new Intl.DateTimeFormat("sv-SE", {
-      timeZone: "Asia/Kolkata",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    });
-    const ms = String(d.getMilliseconds()).padStart(3, "0");
-    return `${formatter.format(d).replace(" ", "T")}.${ms}`;
-  }
-
-  // If inputDate is numeric string or number or ISO string
-  const d = new Date(inputDate);
-  if (isNaN(d.getTime())) {
-    // If input is already formatted string like "2026-09-10 19:45:00", return as is
-    return String(inputDate);
-  }
-
-  const formatter = new Intl.DateTimeFormat("sv-SE", {
-    timeZone: "Asia/Kolkata",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  });
-  const ms = String(d.getMilliseconds()).padStart(3, "0");
-  return `${formatter.format(d).replace(" ", "T")}.${ms}`;
-}
+export const getTodayStr = () => {
+  const d = new Date();
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 
 /**
- * Returns current date in IST formatted as YYYY-MM-DD
+ * Extracts 'YYYY-MM-DD' in local timezone from any timestamp or date string.
  */
-export function getISTDate(inputDate) {
-  const d = inputDate ? new Date(inputDate) : new Date();
-  const valid = !isNaN(d.getTime()) ? d : new Date();
-  const formatter = new Intl.DateTimeFormat("sv-SE", {
-    timeZone: "Asia/Kolkata",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-  return formatter.format(valid);
-}
+export const toLocalDateStr = (val) => {
+  if (!val) return '';
+  if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
+  const d = new Date(val);
+  if (isNaN(d.getTime())) {
+    if (typeof val === 'string') {
+      const part = val.split(' ')[0];
+      if (/^\d{4}-\d{2}-\d{2}$/.test(part)) return part;
+    }
+    return '';
+  }
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
